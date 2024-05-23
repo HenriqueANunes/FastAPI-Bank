@@ -8,7 +8,7 @@ def reset():
     DICT_ACCOUNTS = {}
 
 
-class Bank:
+class Account:
     def __init__(self, account_id: str):
         self.account_id = account_id
 
