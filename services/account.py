@@ -2,16 +2,37 @@ from fastapi import status
 
 from services.custom_http_exception import CustomHttpException
 
+# Global dictionary to store bank account data so its state is preserved between requests without using a database
 DICT_BANK = {}
 
 
 def reset():
     global DICT_BANK
-    DICT_BANK = {}
+    DICT_BANK = {}  # Resetting the dictionary
     return 'OK'
 
 
 class Account:
+    """
+    A class to represent a bank account.
+
+    Attributes
+    ----------
+    account_id : str
+        a string that represents the account id
+
+    Methods
+    -------
+    get_balance():
+        Returns the balance of the account.
+    deposit(amount: float, destination_id: str = None):
+        Deposits an amount into an account.
+    withdraw(amount: float):
+        Withdraws an amount from the account.
+    transfer(amount: float, destination_id: str):
+        Transfers an amount from the account to a destination account.
+    """
+
     def __init__(self, account_id: str):
         self.account_id = account_id
 
