@@ -2,12 +2,12 @@ from fastapi import status
 
 from services.custom_http_exception import CustomHttpException
 
-DICT_ACCOUNTS = {}
+DICT_BANK = {}
 
 
 def reset():
-    global DICT_ACCOUNTS
-    DICT_ACCOUNTS = {}
+    global DICT_BANK
+    DICT_BANK = {}
     return 'OK'
 
 
@@ -20,11 +20,11 @@ class Account:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Account ID is required'})
 
-        if self.account_id not in DICT_ACCOUNTS:
+        if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
                                       content='0')
 
-        return DICT_ACCOUNTS[self.account_id]['balance']
+        return DICT_BANK[self.account_id]['balance']
 
     def deposit(self, amount: float) -> dict:
         if not self.account_id:
@@ -35,18 +35,18 @@ class Account:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Amount must be greater than 0'})
 
-        if self.account_id not in DICT_ACCOUNTS:
-            DICT_ACCOUNTS[self.account_id] = {
+        if self.account_id not in DICT_BANK:
+            DICT_BANK[self.account_id] = {
                 'balance': amount,
             }
 
         else:
-            DICT_ACCOUNTS[self.account_id]['balance'] += amount
+            DICT_BANK[self.account_id]['balance'] += amount
 
         response = {
             'destination': {
                 'id': self.account_id,
-                'balance': DICT_ACCOUNTS[self.account_id]['balance']
+                'balance': DICT_BANK[self.account_id]['balance']
             }
         }
 
@@ -61,20 +61,20 @@ class Account:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Amount must be greater than 0'})
 
-        if self.account_id not in DICT_ACCOUNTS:
+        if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
                                       content='0')
 
-        if amount > DICT_ACCOUNTS[self.account_id]['balance']:
+        if amount > DICT_BANK[self.account_id]['balance']:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Insufficient funds'})
 
-        DICT_ACCOUNTS[self.account_id]['balance'] -= amount
+        DICT_BANK[self.account_id]['balance'] -= amount
 
         response = {
             'origin': {
                 'id': self.account_id,
-                'balance': DICT_ACCOUNTS[self.account_id]['balance']
+                'balance': DICT_BANK[self.account_id]['balance']
             }
         }
 
@@ -89,29 +89,29 @@ class Account:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Amount must be greater than 0'})
 
-        if self.account_id not in DICT_ACCOUNTS:
+        if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
                                       content='0')
 
-        if destination_id not in DICT_ACCOUNTS:
+        if destination_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
                                       content='0')
 
-        if amount > DICT_ACCOUNTS[self.account_id]['balance']:
+        if amount > DICT_BANK[self.account_id]['balance']:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
                                       content={'message': 'Insufficient funds'})
 
-        DICT_ACCOUNTS[self.account_id]['balance'] -= amount
-        DICT_ACCOUNTS[destination_id]['balance'] += amount
+        DICT_BANK[self.account_id]['balance'] -= amount
+        DICT_BANK[destination_id]['balance'] += amount
 
         response = {
             'origin': {
                 'id': self.account_id,
-                'balance': DICT_ACCOUNTS[self.account_id]['balance']
+                'balance': DICT_BANK[self.account_id]['balance']
             },
             'destination': {
                 'id': destination_id,
-                'balance': DICT_ACCOUNTS[destination_id]['balance']
+                'balance': DICT_BANK[destination_id]['balance']
             }
         }
 
