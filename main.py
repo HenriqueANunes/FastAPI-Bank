@@ -1,5 +1,8 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+
+from services.custom_http_exception import CustomHttpException
 
 import services.account
 
@@ -14,10 +17,17 @@ class Transaction(BaseModel):
 app = FastAPI()
 
 
+@app.exception_handler(CustomHttpException)
+async def custom_exception_handler(request: Request, exc: CustomHttpException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=exc.content,
+    )
+
+
 @app.post("/reset")
 async def reset():
-    services.account.reset()
-    return 'OK'
+    return services.account.reset()
 
 
 @app.get("/balance", status_code=status.HTTP_200_OK)

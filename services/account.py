@@ -1,4 +1,6 @@
-from fastapi import HTTPException, status
+from fastapi import status
+
+from services.custom_http_exception import CustomHttpException
 
 DICT_ACCOUNTS = {}
 
@@ -6,6 +8,7 @@ DICT_ACCOUNTS = {}
 def reset():
     global DICT_ACCOUNTS
     DICT_ACCOUNTS = {}
+    return 'OK'
 
 
 class Account:
@@ -14,21 +17,23 @@ class Account:
 
     def get_balance(self) -> dict:
         if not self.account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail={'message': 'Account ID is required'})
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Account ID is required'})
 
         if self.account_id not in DICT_ACCOUNTS:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f'Account ID {self.account_id} does not exist')
+            raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
+                                      content='0')
 
         return DICT_ACCOUNTS[self.account_id]['balance']
 
     def deposit(self, amount: float) -> dict:
         if not self.account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Account ID is required'})
 
         if amount < 0:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Amount must be greater than 0'})
 
         if self.account_id not in DICT_ACCOUNTS:
             DICT_ACCOUNTS[self.account_id] = {
@@ -49,16 +54,20 @@ class Account:
 
     def withdraw(self, amount: float) -> dict:
         if not self.account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Account ID is required'})
 
         if amount < 0:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Amount must be greater than 0'})
 
         if self.account_id not in DICT_ACCOUNTS:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+            raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
+                                      content='0')
 
         if amount > DICT_ACCOUNTS[self.account_id]['balance']:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Insufficient funds'})
 
         DICT_ACCOUNTS[self.account_id]['balance'] -= amount
 
@@ -73,19 +82,24 @@ class Account:
 
     def transfer(self, amount: float, destination_id: str) -> dict:
         if not self.account_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Account ID is required'})
 
         if amount < 0:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Amount must be greater than 0'})
 
         if self.account_id not in DICT_ACCOUNTS:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+            raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
+                                      content='0')
 
         if destination_id not in DICT_ACCOUNTS:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+            raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
+                                      content='0')
 
         if amount > DICT_ACCOUNTS[self.account_id]['balance']:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+            raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
+                                      content={'message': 'Insufficient funds'})
 
         DICT_ACCOUNTS[self.account_id]['balance'] -= amount
         DICT_ACCOUNTS[destination_id]['balance'] += amount
@@ -100,5 +114,5 @@ class Account:
                 'balance': DICT_ACCOUNTS[destination_id]['balance']
             }
         }
-        
+
         return response
