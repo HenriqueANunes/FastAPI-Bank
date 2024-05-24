@@ -48,6 +48,6 @@ async def event(transaction: Transaction):
         response = services.account.Account(account_id=transaction.origin).transfer(amount=transaction.amount,
                                                                                  destination_id=transaction.destination)
     else:
-        raise status.HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+        raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST, content='0')
 
     return response
