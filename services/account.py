@@ -18,11 +18,11 @@ class Account:
     def get_balance(self) -> dict:
         if not self.account_id:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
-                                      content='0')
+                                      content=0)
 
         return DICT_BANK[self.account_id]['balance']
 
@@ -31,11 +31,11 @@ class Account:
 
         if not destination_id:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if amount < 0:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if destination_id not in DICT_BANK:
             DICT_BANK[destination_id] = {
@@ -57,19 +57,19 @@ class Account:
     def withdraw(self, amount: float) -> dict:
         if not self.account_id:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if amount < 0:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
-                                      content='0')
+                                      content=0)
 
         if amount > DICT_BANK[self.account_id]['balance']:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         DICT_BANK[self.account_id]['balance'] -= amount
 
@@ -85,19 +85,19 @@ class Account:
     def transfer(self, amount: float, destination_id: str) -> dict:
         if not self.account_id:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if amount < 0:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         if self.account_id not in DICT_BANK:
             raise CustomHttpException(status_code=status.HTTP_404_NOT_FOUND,
-                                      content='0')
+                                      content=0)
 
         if amount > DICT_BANK[self.account_id]['balance']:
             raise CustomHttpException(status_code=status.HTTP_400_BAD_REQUEST,
-                                      content='0')
+                                      content=0)
 
         withdraw_response = self.withdraw(amount=amount)
         deposit_response = self.deposit(amount=amount, destination_id=destination_id)
